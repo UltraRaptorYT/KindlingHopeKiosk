@@ -1,43 +1,69 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import Image from "next/image"
-import { useState } from "react";
-
-type EventItem = {
-  title: string;
-  date: string;
-  img: string;
-  link: string;
-};
-
-const events: EventItem[] = [
-  {
-    title: "Have a Seat",
-    date: "25 May 2025",
-    img: "/event1.png",
-    link: "https://example.com/signup1",
-  },
-  {
-    title: "The Secret Code of Life",
-    date: "7 Jul 2025",
-    img: "/event2.png",
-    link: "https://example.com/signup2",
-  },
-  {
-    title: "Discovering Dharma",
-    date: "1–29 Jun 2025",
-    img: "/event3.png",
-    link: "https://example.com/signup3",
-  },
-];
+import Image from "next/image";
+import { useEffect, useState, useRef, useCallback } from "react";
+import "./index.css";
+import {
+  KioskConfig,
+  ButtonConfig,
+  EventConfig,
+  SheetAPIResponse,
+} from "@/types";
+import ReactMarkdown from "react-markdown";
 
 export default function WisdomKiosk() {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetInactivityTimer = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setStep(0); // 👈 Reset to "Tap for Wisdom"
+    }, 1000 * 60 * 5); // 5 minutes
+  }, []);
+
+  useEffect(() => {
+    const events = ["mousemove", "mousedown", "keydown", "touchstart"];
+
+    const handleActivity = () => resetInactivityTimer();
+
+    events.forEach((event) => window.addEventListener(event, handleActivity));
+
+    resetInactivityTimer(); // Start the timer initially
+
+    return () => {
+      events.forEach((event) =>
+        window.removeEventListener(event, handleActivity)
+      );
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [resetInactivityTimer]);
+
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [displayNumber, setDisplayNumber] = useState<number | null>(null);
   const [spinning, setSpinning] = useState(false);
+  const [config, setConfig] = useState<KioskConfig | null>(null);
+  const [buttons, setButtons] = useState<ButtonConfig[]>([]);
+  const [events, setEvents] = useState<EventConfig[]>([]);
 
-  const spinDuration = 2000
+  const [spinDuration, setSpinDuration] = useState<number>(2000);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const res = await fetch("/api/sheet");
+      const data: SheetAPIResponse = await res.json();
+
+      setConfig(data.config);
+      setButtons(data.buttons);
+      setEvents(data.events);
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    setSpinDuration(parseInt(config?.NumberSpinDuration ?? "2000"));
+  }, [config]);
 
   const handleTap = () => {
     setSpinning(true);
@@ -55,11 +81,36 @@ export default function WisdomKiosk() {
     }, spinDuration);
   };
 
-
   const goToEvents = () => setStep(2);
 
+  const handleButton = (link: string) => {
+    if (link == "/EVENT") {
+      return goToEvents();
+    } else {
+      return window.open(link, "_blank");
+    }
+  };
+
+  if (!config) {
+    return (
+      <div className="flex items-center justify-center fullHeight text-2xl text-white">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative w-full min-h-[100dvh] bg-cover bg-center" style={{ backgroundImage: "url('/background.png')", backgroundRepeat: "no-repeat", backgroundSize: "cover", backgroundPosition: "center" }}>
+    <div
+      className="relative w-full fullHeight bg-cover bg-center"
+      style={{
+        backgroundImage: `url('${
+          config.BackgroundImage || "/background.png"
+        }')`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-[100dvh] p-6 text-center text-white">
         {step === 0 && (
@@ -68,75 +119,89 @@ export default function WisdomKiosk() {
             onClick={handleTap}
           >
             <div className="max-w-xs">
-              <h1 className="text-7xl font-bold">Tap for Wisdom</h1>
-              <p className="mt-4 text-2xl">Your next reminder might be just one tap away.</p>
+              <h1 className="text-7xl font-bold">
+                {config.StartTitle || "Tap for Wisdom"}
+              </h1>
+              <p className="mt-4 text-2xl">
+                {config.StartReminder ||
+                  "Your next reminder might be just one tap away."}
+              </p>
             </div>
           </div>
         )}
 
-
         {step === 1 && (
           <div>
-            <h2 className="text-4xl">Your number is...</h2>
-            <p className={cn("text-9xl font-bold my-6", spinning && "animate-pulse delay-50")}>
+            <h2 className="text-4xl">
+              {config.NumberTitle || "Your number is..."}
+            </h2>
+            <p
+              className={cn(
+                "text-9xl font-bold my-6",
+                spinning && "animate-pulse delay-50"
+              )}
+            >
               {displayNumber ?? "--"}
             </p>
             {true && (
               <>
-                <p className="text-2xl italic">
-                  Pick up <strong>Kindling Hope</strong> and flip to that page.<br />
-                  Let the wisdom speak to you.
-                </p>
-                <div className="flex gap-5">
-                  <button
-                    onClick={goToEvents}
-                    className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
-                  >
-                    Explore our Classes
-                  </button>
-                  <button
-                    onClick={goToEvents}
-                    className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
-                  >
-                    What&apos;s Coming Up?
-                  </button>
-                  <button
-                    onClick={goToEvents}
-                    className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
-                  >
-                    Hear us Out
-                  </button>
+                <div className="text-2xl italic">
+                  <ReactMarkdown>
+                    {config.FlipPage ||
+                      `Pick up **Kindling Hope** and flip to that page.  
+Let the wisdom speak to you.`}
+                  </ReactMarkdown>
+                </div>
+                <div className="flex gap-5 justify-center items-center">
+                  {buttons.map((button, i) => {
+                    console.log(button.link);
+                    return (
+                      <button
+                        key={"Button" + i}
+                        onClick={() => handleButton(button.link)}
+                        className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
+                      >
+                        {button.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </>
             )}
           </div>
         )}
 
-
         {step === 2 && (
           <div className="grid gap-6 grid-cols-1 md:grid-cols-3 w-full max-w-6xl">
-            {events.map((event, i) => (
-              <div
-                key={i}
-                className="bg-white text-black rounded-lg shadow-lg p-4 flex flex-col items-center"
-              >
-                <div className="relative w-full aspect-[3/4] mb-4">
-                  <Image
-                    src={event.img}
-                    alt={event.title}
-                    fill
-                    className="object-cover rounded-md"
-                  />
+            {events.map((event, i) => {
+              console.log(event);
+              return (
+                <div
+                  key={"Event" + i}
+                  className="bg-white text-black rounded-lg shadow-lg p-4 flex flex-col items-center"
+                >
+                  <div className="relative w-full aspect-[3/4] mb-4">
+                    <Image
+                      src={event.image || "/background.png"}
+                      alt={event.name}
+                      fill
+                      className="object-cover rounded-md"
+                    />
+                  </div>
+                  <h3 className="text-lg font-semibold">{event.name}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{event.link}</p>
+                  <a
+                    href={event.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700">
+                      Sign Up
+                    </button>
+                  </a>
                 </div>
-                <h3 className="text-lg font-semibold">{event.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">{event.date}</p>
-                <a href={event.link} target="_blank" rel="noopener noreferrer">
-                  <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700">
-                    Sign Up
-                  </button>
-                </a>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
