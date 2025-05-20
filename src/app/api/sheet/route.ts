@@ -1,7 +1,8 @@
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
+import { SheetAPIResponse } from "@/types";
 
-let cachedData: any = null;
+let cachedData: SheetAPIResponse | null = null;
 let lastFetch = 0;
 const CACHE_DURATION = 1000 * 60 * 10; // 10 minutes
 
@@ -60,7 +61,7 @@ export async function GET() {
   }));
 
   const response = { config, buttons, events };
-  cachedData = response;
+  cachedData = response as SheetAPIResponse;
   lastFetch = now;
   console.log(response);
   return NextResponse.json(response);

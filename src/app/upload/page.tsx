@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 
 export default function UploadPage() {
@@ -81,11 +82,14 @@ export default function UploadPage() {
               Copy
             </button>
           </div>
-          <img
-            src={url}
-            alt="Uploaded image"
-            className="mt-4 max-w-sm rounded border"
-          />
+          <div className="mt-4 relative w-full max-w-sm aspect-[4/3] rounded border overflow-hidden">
+            <Image
+              src={url}
+              alt="Uploaded image"
+              fill
+              className="object-contain"
+            />
+          </div>
         </div>
       )}
     </div>
