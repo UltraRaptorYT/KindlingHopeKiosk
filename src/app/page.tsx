@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import Image from "next/image"
 import { useState } from "react";
 
@@ -33,12 +34,27 @@ const events: EventItem[] = [
 
 export default function WisdomKiosk() {
   const [step, setStep] = useState<0 | 1 | 2>(0);
-  const [wisdomNumber, setWisdomNumber] = useState<number | null>(null);
+  const [displayNumber, setDisplayNumber] = useState<number | null>(null);
+  const [spinning, setSpinning] = useState(false);
+
+  const spinDuration = 2000
 
   const handleTap = () => {
-    setWisdomNumber(Math.floor(Math.random() * 100) + 1);
+    setSpinning(true);
     setStep(1);
+
+    const interval = setInterval(() => {
+      setDisplayNumber(Math.floor(Math.random() * 100) + 1);
+    }, 50);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      const final = Math.floor(Math.random() * 100) + 1;
+      setDisplayNumber(final);
+      setSpinning(false);
+    }, spinDuration);
   };
+
 
   const goToEvents = () => setStep(2);
 
@@ -62,33 +78,40 @@ export default function WisdomKiosk() {
         {step === 1 && (
           <div>
             <h2 className="text-4xl">Your number is...</h2>
-            <p className="text-9xl font-bold my-6">{wisdomNumber}</p>
-            <p className="text-2xl italic">
-              Pick up <strong>Kindling Hope</strong> and flip to that page.<br />
-              Let the wisdom speak to you.
+            <p className={cn("text-9xl font-bold my-6", spinning && "animate-pulse delay-50")}>
+              {displayNumber ?? "--"}
             </p>
-            <div className="flex gap-5">
-              <button
-                onClick={goToEvents}
-                className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
-              >
-                Explore our Classes
-              </button>
-              <button
-                onClick={goToEvents}
-                className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
-              >
-                What&apos;s Coming Up?
-              </button>
-              <button
-                onClick={goToEvents}
-                className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
-              >
-                Hear us Out
-              </button>
-            </div>
+            {true && (
+              <>
+                <p className="text-2xl italic">
+                  Pick up <strong>Kindling Hope</strong> and flip to that page.<br />
+                  Let the wisdom speak to you.
+                </p>
+                <div className="flex gap-5">
+                  <button
+                    onClick={goToEvents}
+                    className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
+                  >
+                    Explore our Classes
+                  </button>
+                  <button
+                    onClick={goToEvents}
+                    className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
+                  >
+                    What&apos;s Coming Up?
+                  </button>
+                  <button
+                    onClick={goToEvents}
+                    className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
+                  >
+                    Hear us Out
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
+
 
         {step === 2 && (
           <div className="grid gap-6 grid-cols-1 md:grid-cols-3 w-full max-w-6xl">
