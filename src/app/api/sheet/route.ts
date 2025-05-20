@@ -6,10 +6,12 @@ let cachedData: SheetAPIResponse | null = null;
 let lastFetch = 0;
 const CACHE_DURATION = 1000 * 60 * 10; // 10 minutes
 
-export async function GET() {
-  const now = Date.now();
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const refresh = url.searchParams.get("refresh");
 
-  if (cachedData && now - lastFetch < CACHE_DURATION) {
+  const now = Date.now();
+  if (!refresh && cachedData && now - lastFetch < CACHE_DURATION) {
     return NextResponse.json(cachedData);
   }
 

@@ -69,13 +69,16 @@ export default function WisdomKiosk() {
     setSpinning(true);
     setStep(1);
 
+    const min = parseInt(config?.NumberMin ?? "1");
+    const max = parseInt(config?.NumberMax ?? "100");
+
     const interval = setInterval(() => {
-      setDisplayNumber(Math.floor(Math.random() * 100) + 1);
+      setDisplayNumber(Math.floor(Math.random() * (max - min + 1)) + min);
     }, 50);
 
     setTimeout(() => {
       clearInterval(interval);
-      const final = Math.floor(Math.random() * 100) + 1;
+      const final = Math.floor(Math.random() * (max - min + 1)) + min;
       setDisplayNumber(final);
       setSpinning(false);
     }, spinDuration);
