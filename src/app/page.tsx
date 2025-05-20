@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import Image from "next/image"
+import { useState } from "react";
 
 type EventItem = {
   title: string;
@@ -77,7 +78,7 @@ export default function WisdomKiosk() {
                 onClick={goToEvents}
                 className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
               >
-                What's Coming Up?
+                What&apos;s Coming Up?
               </button>
               <button
                 onClick={goToEvents}
@@ -96,7 +97,14 @@ export default function WisdomKiosk() {
                 key={i}
                 className="bg-white text-black rounded-lg shadow-lg p-4 flex flex-col items-center"
               >
-                <img src={event.img} alt={event.title} className="w-full h-auto rounded-md mb-4" />
+                <div className="relative w-full aspect-[3/4] mb-4">
+                  <Image
+                    src={event.img}
+                    alt={event.title}
+                    fill
+                    className="object-cover rounded-md"
+                  />
+                </div>
                 <h3 className="text-lg font-semibold">{event.title}</h3>
                 <p className="text-sm text-gray-600 mb-2">{event.date}</p>
                 <a href={event.link} target="_blank" rel="noopener noreferrer">
