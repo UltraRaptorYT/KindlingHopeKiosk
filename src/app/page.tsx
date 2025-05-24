@@ -199,7 +199,7 @@ Let the wisdom speak to you.`}
                     />
                   </div>
                   <h3 className="text-lg font-semibold">{event.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{event.link}</p>
+                  <p className="text-sm text-gray-600 mb-2">{event.date}</p>
                   <a
                     href={event.link}
                     target="_blank"
