@@ -48,7 +48,7 @@ export async function GET(req: Request) {
     }),
     sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `${process.env.SHEET_NAME || "CONFIG"}!H5:J${eventEndRow}`,
+      range: `${process.env.SHEET_NAME || "CONFIG"}!H5:K${eventEndRow}`,
     }),
   ]);
 
@@ -56,8 +56,9 @@ export async function GET(req: Request) {
   const buttons = buttonsRows.map(([name, link]) => ({ name, link }));
 
   const eventRows = eventsRes.data.values ?? [];
-  const events = eventRows.map(([name, link, image]) => ({
+  const events = eventRows.map(([name, date, link, image]) => ({
     name,
+    date,
     link,
     image,
   }));

@@ -151,7 +151,7 @@ export default function WisdomKiosk() {
                 <div className="text-2xl italic">
                   <ReactMarkdown>
                     {config.FlipPage ||
-                      `Pick up **Kindling Hope** and flip to that page.  
+                      `Pick up **Kindling Hope** and flip to that page.
 Let the wisdom speak to you.`}
                   </ReactMarkdown>
                 </div>
@@ -175,10 +175,17 @@ Let the wisdom speak to you.`}
         )}
 
         {step === 2 && (
-          <div className="grid gap-6 grid-cols-1 md:grid-cols-3 w-full max-w-6xl">
-            {events.map((event, i) => {
-              console.log(event);
-              return (
+          <>
+            <div className="mb-6">
+              <button
+                onClick={() => setStep(1)}
+                className="px-4 py-2 bg-white text-black rounded-full shadow hover:bg-gray-200"
+              >
+                ← Back to Your Number
+              </button>
+            </div>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-3 w-full max-w-6xl">
+              {events.map((event, i) => (
                 <div
                   key={"Event" + i}
                   className="bg-white text-black rounded-lg shadow-lg p-4 flex flex-col items-center"
@@ -203,9 +210,9 @@ Let the wisdom speak to you.`}
                     </button>
                   </a>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

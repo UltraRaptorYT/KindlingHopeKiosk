@@ -3,12 +3,12 @@ export type KioskConfig = {
   StartTitle: string;
   StartReminder: string;
   NumberTitle: string;
-  NumberMin: string;         // will be parsed as number
-  NumberMax: string;         // will be parsed as number
+  NumberMin: string; // will be parsed as number
+  NumberMax: string; // will be parsed as number
   NumberSpinDuration: string; // ms
   FlipPage: string;
-  NumberOfBtn: string;       // parsed as number
-  NumberOfEvents: string;    // parsed as number
+  NumberOfBtn: string; // parsed as number
+  NumberOfEvents: string; // parsed as number
 };
 
 export type ButtonConfig = {
@@ -18,6 +18,7 @@ export type ButtonConfig = {
 
 export type EventConfig = {
   name: string;
+  date: string;
   link: string;
   image: string;
 };
