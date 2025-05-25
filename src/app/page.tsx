@@ -11,8 +11,18 @@ import {
   SheetAPIResponse,
 } from "@/types";
 import ReactMarkdown from "react-markdown";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { IoHomeOutline } from "react-icons/io5";
 
 export default function WisdomKiosk() {
+  const [iframeURL, setIframeURL] = useState<string>("");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetInactivityTimer = useCallback(() => {
@@ -39,7 +49,7 @@ export default function WisdomKiosk() {
     };
   }, [resetInactivityTimer]);
 
-  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
   const [displayNumber, setDisplayNumber] = useState<number | null>(null);
   const [spinning, setSpinning] = useState(false);
   const [config, setConfig] = useState<KioskConfig | null>(null);
@@ -90,7 +100,8 @@ export default function WisdomKiosk() {
     if (link == "/EVENT") {
       return goToEvents();
     } else {
-      return window.open(link, "_blank");
+      setStep(3);
+      return setIframeURL(link);
     }
   };
 
@@ -146,43 +157,49 @@ export default function WisdomKiosk() {
             >
               {displayNumber ?? "--"}
             </p>
-            {true && (
-              <>
-                <div className="text-2xl italic">
-                  <ReactMarkdown>
-                    {config.FlipPage ||
-                      `Pick up **Kindling Hope** and flip to that page.
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              onClick={() => setStep(0)}
+              className="absolute top-[5%] right-[5%] w-[48px] h-[48px]"
+            >
+              <IoHomeOutline className="size-10"></IoHomeOutline>
+            </Button>
+            <>
+              <div className="text-2xl italic">
+                <ReactMarkdown>
+                  {config.FlipPage ||
+                    `Pick up **Kindling Hope** and flip to that page.
 Let the wisdom speak to you.`}
-                  </ReactMarkdown>
-                </div>
-                <div className="flex gap-5 justify-center items-center">
-                  {buttons.map((button, i) => {
-                    console.log(button.link);
-                    return (
-                      <button
-                        key={"Button" + i}
-                        onClick={() => handleButton(button.link)}
-                        className="mt-6 px-6 py-3 bg-white text-black rounded-full hover:bg-gray-300"
-                      >
-                        {button.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+                </ReactMarkdown>
+              </div>
+              <div className="flex gap-5 justify-center items-center">
+                {buttons.map((button, i) => {
+                  console.log(button.link);
+                  return (
+                    <Button
+                      key={"Button" + i}
+                      onClick={() => handleButton(button.link)}
+                      className="mt-6 px-6 py-6 text-base bg-white text-black rounded-full hover:bg-gray-300"
+                    >
+                      {button.name}
+                    </Button>
+                  );
+                })}
+              </div>
+            </>
           </div>
         )}
 
         {step === 2 && (
           <>
             <div className="mb-6">
-              <button
+              <Button
                 onClick={() => setStep(1)}
-                className="px-4 py-2 bg-white text-black rounded-full shadow hover:bg-gray-200"
+                className="px-4 py-5 bg-white text-black rounded-full shadow hover:bg-gray-200"
               >
                 ← Back to Your Number
-              </button>
+              </Button>
             </div>
             <div className="grid gap-6 grid-cols-1 md:grid-cols-3 w-full max-w-6xl">
               {events.map((event, i) => (
@@ -200,19 +217,44 @@ Let the wisdom speak to you.`}
                   </div>
                   <h3 className="text-lg font-semibold">{event.name}</h3>
                   <p className="text-sm text-gray-600 mb-2">{event.date}</p>
-                  <a
-                    href={event.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700">
-                      Sign Up
-                    </button>
-                  </a>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="mt-2 px-4 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700">
+                        Sign Up
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle className="text-center text-3xl">Scan the QR Code</DialogTitle>
+                        <Image
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${event.link}`}
+                          width={300}
+                          height={300}
+                          alt={event.link}
+                          className="mx-auto py-5"
+                        />
+                      </DialogHeader>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               ))}
             </div>
           </>
+        )}
+
+        {step === 3 && (
+          <div>
+            <div className="mb-6">
+              <Button
+                onClick={() => setStep(1)}
+                className="px-4 py-5 bg-white text-black rounded-full shadow hover:bg-gray-200"
+              >
+                ← Back to Your Number
+              </Button>
+            </div>
+            <iframe src={iframeURL} width={1488} height={837}></iframe>
+          </div>
         )}
       </div>
     </div>

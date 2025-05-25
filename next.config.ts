@@ -2,7 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [new URL("https://hlzsmadaanjcpyjghntc.supabase.co/**")],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "hlzsmadaanjcpyjghntc.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "api.qrserver.com",
+      },
+    ],
   },
 };
 
