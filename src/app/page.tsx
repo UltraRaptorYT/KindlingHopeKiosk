@@ -226,7 +226,9 @@ Let the wisdom speak to you.`}
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle className="text-center text-3xl">Scan the QR Code</DialogTitle>
+                        <DialogTitle className="text-center text-3xl">
+                          Scan the QR Code
+                        </DialogTitle>
                         <Image
                           src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${event.link}`}
                           width={300}
