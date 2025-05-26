@@ -212,11 +212,12 @@ Let the wisdom speak to you.`}
                       src={event.image || "/background.png"}
                       alt={event.name}
                       fill
-                      className="object-cover rounded-md"
+                      className="object-cover rounded-md object-center"
                     />
                   </div>
                   <h3 className="text-lg font-semibold">{event.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{event.date}</p>
+                  <p className="text-sm text-gray-600">Venue: {event.venue}</p>
+                  <p className="text-sm text-gray-600 mb-2">Date: {event.date}</p>
 
                   <Dialog>
                     <DialogTrigger asChild>

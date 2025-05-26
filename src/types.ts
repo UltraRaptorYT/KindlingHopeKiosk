@@ -18,6 +18,7 @@ export type ButtonConfig = {
 
 export type EventConfig = {
   name: string;
+  venue: string;
   date: string;
   link: string;
   image: string;
