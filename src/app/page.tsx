@@ -217,7 +217,7 @@ Let the wisdom speak to you.`}
                   </div>
                   <h3 className="text-lg font-semibold">{event.name}</h3>
                   <p className="text-sm text-gray-600">Venue: {event.venue}</p>
-                  <p className="text-sm text-gray-600 mb-2">Date and Time: {event.date}</p>
+                  <p className="text-sm text-gray-600 mb-2">Date & Time: {event.date}</p>
 
                   <Dialog>
                     <DialogTrigger asChild>
