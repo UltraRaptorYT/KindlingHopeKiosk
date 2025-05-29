@@ -201,7 +201,7 @@ Let the wisdom speak to you.`}
                 ← Back to Your Number
               </Button>
             </div>
-            <div className="grid gap-6 grid-cols-1 md:grid-cols-3 w-full max-w-6xl">
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-4 w-full max-w-6xl">
               {events.map((event, i) => (
                 <div
                   key={"Event" + i}
