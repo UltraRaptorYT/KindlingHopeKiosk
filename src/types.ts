@@ -9,6 +9,7 @@ export type KioskConfig = {
   FlipPage: string;
   NumberOfBtn: string; // parsed as number
   NumberOfEvents: string; // parsed as number
+  SkippedNumbers: string;
 };
 
 export type ButtonConfig = {

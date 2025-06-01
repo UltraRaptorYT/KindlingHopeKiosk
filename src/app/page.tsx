@@ -75,6 +75,23 @@ export default function WisdomKiosk() {
     setSpinDuration(parseInt(config?.NumberSpinDuration ?? "2000"));
   }, [config]);
 
+  function getRandomNumber(min: number, max: number, excluded: number[] = []) {
+    const allowed = [];
+
+    for (let i = min; i <= max; i++) {
+      if (!excluded.includes(i)) {
+        allowed.push(i);
+      }
+    }
+
+    if (allowed.length === 0) {
+      throw new Error("No numbers available to choose from.");
+    }
+
+    const randomIndex = Math.floor(Math.random() * allowed.length);
+    return allowed[randomIndex];
+  }
+
   const handleTap = () => {
     setSpinning(true);
     setStep(1);
@@ -88,7 +105,11 @@ export default function WisdomKiosk() {
 
     setTimeout(() => {
       clearInterval(interval);
-      const final = Math.floor(Math.random() * (max - min + 1)) + min;
+      const final = getRandomNumber(
+        min,
+        max,
+        config?.SkippedNumbers.split(",").map((e) => parseInt(e))
+      );
       setDisplayNumber(final);
       setSpinning(false);
     }, spinDuration);
@@ -175,7 +196,6 @@ Let the wisdom speak to you.`}
               </div>
               <div className="flex gap-5 justify-center items-center">
                 {buttons.map((button, i) => {
-                  console.log(button.link);
                   return (
                     <Button
                       key={"Button" + i}
@@ -217,7 +237,9 @@ Let the wisdom speak to you.`}
                   </div>
                   <h3 className="text-lg font-semibold">{event.name}</h3>
                   <p className="text-sm text-gray-600">Venue: {event.venue}</p>
-                  <p className="text-sm text-gray-600 mb-2">Date & Time: {event.date}</p>
+                  <p className="text-sm text-gray-600 mb-2">
+                    Date & Time: {event.date}
+                  </p>
 
                   <Dialog>
                     <DialogTrigger asChild>
