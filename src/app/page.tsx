@@ -93,6 +93,8 @@ export default function WisdomKiosk() {
   }
 
   const handleTap = () => {
+    fetch("/api/interact");
+
     setSpinning(true);
     setStep(1);
 
